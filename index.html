@@ -2,10 +2,12 @@
 <html>
 
   <body style="background-image: url('./desktop.jpg'); background-size: cover; height: 100vh; margin: 0; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
-    <div style="position: absolute; top: 50%; left: 50%; 
+    <div id="welcome" style="position: absolute; top: 50%; left: 50%; 
 transform: translate(-50%, -50%); padding: 5px; border: solid; width: fit-content; border-radius: 16px;">
         <h1 style="margin: 4px;">QWERTY OS</h1>
-    <p>It is a cool OS</p>
+    <p id="welcomeheader"> 
+		Handle
+	</p>
 
     <img src="./mango.jpg" />
   
@@ -26,12 +28,60 @@ transform: translate(-50%, -50%); padding: 5px; border: solid; width: fit-conten
   </div>
 
   <script>
+  // Clock
+  setInterval(() => {
+    document.getElementById("timeElement").textContent =
+      new Date().toLocaleString();
+  }, 1000);
 
-    setInterval(function () {
-  document.querySelector("#timeElement").innerHTML = new Date().toLocaleString();
-}, 1000);
+  // Draggable window
+  makeDraggable(document.getElementById("welcome"));
 
-  </script>
+  function makeDraggable(element) {
+    let startX = 0;
+    let startY = 0;
+    let mouseX = 0;
+    let mouseY = 0;
+
+    const handle =
+      document.getElementById(element.id + "header") || element;
+
+    handle.style.cursor = "move";
+
+    handle.onmousedown = startDrag;
+
+    function startDrag(e) {
+      e.preventDefault();
+
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      document.onmouseup = stopDrag;
+      document.onmousemove = drag;
+    }
+
+    function drag(e) {
+      e.preventDefault();
+
+      startX = mouseX - e.clientX;
+      startY = mouseY - e.clientY;
+
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      element.style.top = (element.offsetTop - startY) + "px";
+      element.style.left = (element.offsetLeft - startX) + "px";
+
+      // Prevent translate() from fighting the drag
+      element.style.transform = "none";
+    }
+
+    function stopDrag() {
+      document.onmouseup = null;
+      document.onmousemove = null;
+    }
+  }
+</script>
   </body>
 
 </html>
