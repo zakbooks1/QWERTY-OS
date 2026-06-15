@@ -1,87 +1,336 @@
 <!DOCTYPE html>
 <html>
+<head>
+<meta charset="UTF-8">
+<title>QWERTY GOD KERNEL OS</title>
 
-  <body style="background-image: url('./desktop.jpg'); background-size: cover; height: 100vh; margin: 0; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
-    <div id="welcome" style="position: absolute; top: 50%; left: 50%; 
-transform: translate(-50%, -50%); padding: 5px; border: solid; width: fit-content; border-radius: 16px;">
-        <h1 style="margin: 4px;">QWERTY OS</h1>
-    <p id="welcomeheader"> 
-		Handle
-	</p>
+<style>
+body{
+    margin:0;
+    overflow:hidden;
+    height:100vh;
+    font-family:Tahoma;
+    background:url("./desktop.jpg") center/cover;
+}
 
-    <img src="./mango.jpg" />
-  
+/* BOOT */
+#boot{
+    position:fixed;
+    inset:0;
+    background:black;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+    z-index:99999;
+}
+
+/* TOPBAR */
+#topbar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:28px;
+    background:#245edb;
+    color:white;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 10px;
+    box-sizing:border-box;
+}
+
+/* TASKBAR */
+#taskbar{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:38px;
+    background:#2f7d32;
+    display:flex;
+    align-items:center;
+}
+
+/* START */
+#start{
+    margin-left:6px;
+    padding:5px 12px;
+    background:#3aa63f;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* MENU */
+#menu{
+    position:fixed;
+    bottom:38px;
+    left:0;
+    width:220px;
+    background:#ece9d8;
+    border:1px solid #333;
+    display:none;
+    z-index:10000;
+}
+
+.item{
+    padding:8px;
+    cursor:pointer;
+}
+.item:hover{background:#cfe2ff}
+
+/* WINDOWS */
+.window{
+    position:absolute;
+    width:420px;
+    background:#ece9d8;
+    border:1px solid #0a246a;
+    box-shadow:3px 3px 10px rgba(0,0,0,.35);
+    display:none;
+}
+
+.titlebar{
+    background:#245edb;
+    color:white;
+    padding:5px;
+    display:flex;
+    justify-content:space-between;
+    cursor:move;
+    user-select:none;
+}
+
+.content{
+    padding:10px;
+}
+
+.close{
+    background:#c42b1c;
+    border:none;
+    color:white;
+    width:22px;
+    cursor:pointer;
+}
+
+/* DEBUG */
+#kernel{
+    position:fixed;
+    right:0;
+    bottom:38px;
+    width:220px;
+    height:120px;
+    background:#111;
+    color:#0f0;
+    font-size:11px;
+    padding:6px;
+    overflow:auto;
+}
+</style>
+</head>
+
+<body>
+
+<!-- BOOT -->
+<div id="boot">QWERTY GOD KERNEL OS LOADING...</div>
+
+<!-- TOPBAR -->
+<div id="topbar">
+    <span>GOD KERNEL OS</span>
+    <span id="state">booting...</span>
+</div>
+
+<!-- TASKBAR -->
+<div id="taskbar">
+    <div id="start" onclick="OS.menu()">Start</div>
+</div>
+
+<!-- MENU -->
+<div id="menu">
+    <div class="item" onclick="OS.launch('mango')">🍋 Mango</div>
+    <div class="item" onclick="OS.launch('files')">📁 Files</div>
+    <div class="item" onclick="OS.launch('terminal')">⌨ Terminal</div>
+    <div class="item" onclick="OS.launch('settings')">⚙ Settings</div>
+    <div class="item" onclick="OS.taskManager()">🧠 Task Manager</div>
+</div>
+
+<div id="kernel"></div>
+
+<!-- ================= WINDOWS ================= -->
+
+<div id="mango" class="window" style="top:120px;left:120px">
+    <div class="titlebar" onmousedown="OS.drag(event,'mango')">
+        Mango Engine
+        <button class="close" onclick="OS.close('mango')">X</button>
     </div>
-      <div
-    style="position: absolute; width: 100%; display: flex; backdrop-filter: blur(10px); background-color: rgba(0, 0, 0, 0.125); color: #fff; justify-content: space-between; gap: 32px;">
-        <p
-          style="margin-left: 16px; font-weight: 700; background-color: rgba(256, 256, 256, 0.125); padding: 4px 12px; border-radius: 16px;">
-            QWERTY OS
-        </p>
-        <p style="margin-left: 16px; background-color: rgba(256, 256, 256, 0.25); padding: 4px 12px; border-radius: 16px;">
-            ☀️ Mangos ☁️
-        </p>
-        <p id="timeElement"
-          style="margin-right: 16px; background-color: rgba(256, 256, 256, 0.125); padding: 4px 12px; border-radius: 16px;">
-            6/21/2023 3:41 PM
-        </p>
-  </div>
+    <div class="content">
+        <h2 id="mval">0</h2>
+        <button onclick="OS.mango()">Generate</button>
+    </div>
+</div>
 
-  <script>
-  // Clock
-  setInterval(() => {
-    document.getElementById("timeElement").textContent =
-      new Date().toLocaleString();
-  }, 1000);
+<div id="files" class="window" style="top:160px;left:200px">
+    <div class="titlebar" onmousedown="OS.drag(event,'files')">
+        Files
+        <button class="close" onclick="OS.close('files')">X</button>
+    </div>
+    <div class="content" id="fs"></div>
+</div>
 
-  // Draggable window
-  makeDraggable(document.getElementById("welcome"));
+<div id="terminal" class="window" style="top:200px;left:240px">
+    <div class="titlebar" onmousedown="OS.drag(event,'terminal')">
+        Terminal
+        <button class="close" onclick="OS.close('terminal')">X</button>
+    </div>
+    <div class="content">
+        <input id="cmd" style="width:100%" placeholder="type command">
+        <button onclick="OS.run()">Run</button>
+    </div>
+</div>
 
-  function makeDraggable(element) {
-    let startX = 0;
-    let startY = 0;
-    let mouseX = 0;
-    let mouseY = 0;
+<div id="settings" class="window" style="top:240px;left:280px">
+    <div class="titlebar" onmousedown="OS.drag(event,'settings')">
+        Settings
+        <button class="close" onclick="OS.close('settings')">X</button>
+    </div>
+    <div class="content">
+        <button onclick="location.reload()">Restart OS</button>
+    </div>
+</div>
 
-    const handle =
-      document.getElementById(element.id + "header") || element;
+<script>
 
-    handle.style.cursor = "move";
+/* ================= KERNEL ================= */
 
-    handle.onmousedown = startDrag;
+const OS = {
 
-    function startDrag(e) {
-      e.preventDefault();
+processes:{},
+memory:{},
+logbuf:[],
 
-      mouseX = e.clientX;
-      mouseY = e.clientY;
+boot(){
+    setTimeout(()=>{
+        const b=document.getElementById("boot");
+        if(b) b.remove();
 
-      document.onmouseup = stopDrag;
-      document.onmousemove = drag;
-    }
+        this.state("online");
+        this.log("Kernel started");
+    },1200);
+},
 
-    function drag(e) {
-      e.preventDefault();
+state(t){
+    document.getElementById("state").innerText=t;
+},
 
-      startX = mouseX - e.clientX;
-      startY = mouseY - e.clientY;
+menu(){
+    menu.style.display = menu.style.display==="block"?"none":"block";
+},
 
-      mouseX = e.clientX;
-      mouseY = e.clientY;
+/* ========== PROCESS ========== */
 
-      element.style.top = (element.offsetTop - startY) + "px";
-      element.style.left = (element.offsetLeft - startX) + "px";
+launch(id){
+    let w=document.getElementById(id);
+    if(!w) return;
 
-      // Prevent translate() from fighting the drag
-      element.style.transform = "none";
-    }
+    w.style.display="block";
+    this.focus(id);
+    this.processes[id]={state:"running"};
 
-    function stopDrag() {
-      document.onmouseup = null;
-      document.onmousemove = null;
-    }
-  }
+    this.log("launch "+id);
+},
+
+close(id){
+    let w=document.getElementById(id);
+    if(w) w.style.display="none";
+
+    delete this.processes[id];
+    this.log("close "+id);
+},
+
+/* ========== MANGO ========== */
+
+mango(){
+    let v=Number(this.get("mango")||0);
+    v++;
+    this.set("mango",v);
+    mval.innerText=v;
+},
+
+/* ========== STORAGE ========== */
+
+set(k,v){
+    localStorage.setItem("os_"+k,v);
+},
+
+get(k){
+    return localStorage.getItem("os_"+k);
+},
+
+/* ========== TERMINAL ========== */
+
+run(){
+    let c=document.getElementById("cmd").value;
+
+    if(c==="help") this.log("commands: help, processes, clear");
+    else if(c==="processes") this.log(JSON.stringify(this.processes));
+    else if(c==="clear") kernel.innerText="";
+    else this.log("unknown: "+c);
+},
+
+/* ========== TASK MANAGER ========== */
+
+taskManager(){
+    this.log("Processes: "+Object.keys(this.processes).length);
+    this.log(JSON.stringify(this.processes));
+},
+
+/* ========== WINDOW SYSTEM ========== */
+
+drag(e,id){
+    let el=document.getElementById(id);
+    let x=e.clientX,y=e.clientY;
+
+    document.onmousemove=(ev)=>{
+        let dx=x-ev.clientX;
+        let dy=y-ev.clientY;
+        x=ev.clientX;
+        y=ev.clientY;
+
+        el.style.left=(el.offsetLeft-dx)+"px";
+        el.style.top=(el.offsetTop-dy)+"px";
+    };
+
+    document.onmouseup=()=>document.onmousemove=null;
+},
+
+focus(id){
+    document.querySelectorAll(".window")
+    .forEach(w=>w.style.zIndex=10);
+
+    document.getElementById(id).style.zIndex=999;
+},
+
+/* ========== LOG SYSTEM ========== */
+
+log(m){
+    this.logbuf.push(m);
+    kernel.innerText=this.logbuf.slice(-12).join("\n");
+}
+
+};
+
+/* ================= BOOT SAFETY ================= */
+
+window.onerror = function(e){
+    console.log("OS ERROR:",e);
+};
+
+window.addEventListener("DOMContentLoaded",()=>{
+    OS.boot();
+});
+
 </script>
-  </body>
 
+</body>
 </html>
